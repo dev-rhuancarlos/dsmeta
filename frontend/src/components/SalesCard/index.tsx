@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Sale } from "../../models/sale";
 import { BASE_URL } from "../../utils/request";
-import { formatedDate } from "../../utils/Utils";
+import { formatedDate, paramDate } from "../../utils/Utils";
 import NotificationButton from "../NotificationButton";
 
 import "./style.css";
@@ -28,12 +28,15 @@ function SalesCard() {
 
     //useEffect, executa a funcao quando o componente X for montado e quando ele for alterado
     useEffect(() => {
-        axios.get(`${BASE_URL}/sales`).then(response => {
-            setSales(response.data.content);
-            console.log(response.data.content);
-            
+
+        const inicialDate = paramDate(minDate);
+        const finalDate = paramDate(maxDate);
+        
+
+        axios.get(`${BASE_URL}/sales?minDate=${inicialDate}&maxDate=${finalDate}`).then(response => {
+            setSales(response.data.content);         
         })
-    }, [])
+    }, [minDate,maxDate]);
 
     return (
         <div className="dsmeta-card">
@@ -84,7 +87,7 @@ function SalesCard() {
                                     <td>R$ {sale.amount.toFixed(2)}</td>
                                     <td>
                                         <div className="dsmeta-red-btn-container">
-                                            <NotificationButton />
+                                            <NotificationButton saleId={sale.id} />
                                         </div>
                                     </td>
                                 </tr>
